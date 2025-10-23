@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de Lógica Matemática</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      width: 80%;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Juego de Lógica Matemática</h1>
+
+    <div id="inicio">
+      <p>Ingresa tu nombre para comenzar:</p>
+      <input type="text" id="nombre" placeholder="Tu nombre" />
+      <br />
+      <button onclick="iniciarJuego()">Comenzar</button>
+    </div>
+
+    <div id="cuestionario" class="hidden">
+      <h2 id="pregunta"></h2>
+      <input type="number" id="respuesta" placeholder="Tu respuesta" />
+      <br />
+      <button onclick="siguientePregunta()">Siguiente</button>
+    </div>
+
+    <div id="resultados" class="hidden">
+      <h2>¡Juego terminado!</h2>
+      <p><strong>Nombre:</strong> <span id="nombreResultado"></span></p>
+      <p><strong>Respuestas correctas:</strong> <span id="puntaje"></span>/5</p>
+      <div id="mensaje"></div>
+      
+      <!-- Sonidos embebidos en base64 (sin enlaces externos) -->
+      <audio id="celebracion" preload="auto">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+      </audio>
+      
+      <audio id="abucheos" preload="auto">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+      { texto: "1. Si 2^x = 32, ¿cuál es el valor de x?", respuesta: 5 },
+      { texto: "2. ¿Cuál es el siguiente número en la secuencia: 2, 6, 12, 20, 30, ...?", respuesta: 42 },
+      { texto: "3. Un reloj da 6 campanadas en 5 segundos. ¿En cuántos segundos dará 12 campanadas?", respuesta: 11 },
+      { texto: "4. Si A + B = 15, B + C = 20 y A + C = 25, ¿cuánto vale A + B + C?", respuesta: 30 },
+      { texto: "5. ¿Cuántos triángulos hay en total en un pentágono regular con todas sus diagonales trazadas?", respuesta: 35 }
+    ];
+
+    let indice = 0;
+    let correctas = 0;
+    let nombreUsuario = "";
+
+    function iniciarJuego() {
+      nombreUsuario = document.getElementById("nombre").value.trim();
+      if (!nombreUsuario) {
+        alert("Por favor, ingresa tu nombre.");
+        return;
+      }
+      document.getElementById("inicio").classList.add("hidden");
+      document.getElementById("cuestionario").classList.remove("hidden");
+      mostrarPregunta();
+    }
+
+    function mostrarPregunta() {
+      if (indice < preguntas.length) {
+        document.getElementById("pregunta").textContent = preguntas[indice].texto;
+        document.getElementById("respuesta").value = "";
+      } else {
+        mostrarResultados();
+      }
+    }
+
+    function siguientePregunta() {
+      const respuestaUsuario = parseInt(document.getElementById("respuesta").value);
+      if (isNaN(respuestaUsuario)) {
+        alert("Por favor, ingresa un número válido.");
+        return;
+      }
+
+      if (respuestaUsuario === preguntas[indice].respuesta) {
+        correctas++;
+      }
+      indice++;
+
+      if (indice < preguntas.length) {
+        mostrarPregunta();
+      } else {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      document.getElementById("cuestionario").classList.add("hidden");
+      document.getElementById("resultados").classList.remove("hidden");
+
+      document.getElementById("nombreResultado").textContent = nombreUsuario;
+      document.getElementById("puntaje").textContent = correctas;
+
+      const mensaje = document.getElementById("mensaje");
+      const audioCelebracion = document.getElementById("celebracion");
+      const audioAbucheos = document.getElementById("abucheos");
+
+      // Reiniciar ambos audios
+      audioCelebracion.currentTime = 0;
+      audioAbucheos.currentTime = 0;
+
+      if (correctas > 3) {
+        mensaje.innerHTML = "<h3>¡Felicidades! 🎉 Has demostrado gran lógica matemática.</h3>";
+        audioCelebracion.play().catch(e => console.log("Audio no reproducido:", e));
+      } else if (correctas < 2) {
+        mensaje.innerHTML = "<h3>¡Uy! Parece que necesitas repasar un poco. 😬</h3>";
+        audioAbucheos.play().catch(e => console.log("Audio no reproducido:", e));
+      } else {
+        mensaje.innerHTML = "<h3>Buen intento, pero puedes mejorar. ¡Sigue practicando! 💡</h3>";
+      }
+    }
+  </script>
+</body>
+</html>
